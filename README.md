@@ -315,15 +315,15 @@ See [Security Audit Report](docs/COMPONENT_SECURITY_AUDIT.md) for details.
 ## Component Catalog
 
 View all components with live examples:
-- [Gallery](https://larcjs.github.io/larc-site/gallery.html)
-- [Component Documentation](https://larcjs.github.io/larc-site/docs/)
-- [Interactive Demos](https://larcjs.github.io/larc-examples/)
+- [Gallery](https://larcjs.github.io/site/gallery.html)
+- [Component Documentation](https://larcjs.github.io/site/docs/)
+- [Interactive Demos](https://larcjs.github.io/examples/)
 
 ## Related Packages
 
-- **[@larcjs/core](https://github.com/larcjs/larc-core)** — Core PAN messaging bus
-- **[@larcjs/devtools](https://github.com/larcjs/larc-devtools)** — Chrome DevTools extension
-- **[@larcjs/examples](https://github.com/larcjs/larc-examples)** — Demo applications
+- **[@larcjs/core](https://github.com/larcjs/core)** — Core PAN messaging bus
+- **[@larcjs/devtools](https://github.com/larcjs/devtools)** — Chrome DevTools extension
+- **[@larcjs/examples](https://github.com/larcjs/examples)** — Demo applications
 
 ## Contributing
 
@@ -335,6 +335,6 @@ MIT © Chris Robison
 
 ## Support
 
-- 📖 [Documentation](https://larcjs.github.io/larc-site/)
-- 💬 [Discussions](https://github.com/larcjs/larc-components/discussions)
-- 🐛 [Issue Tracker](https://github.com/larcjs/larc-components/issues)
+- 📖 [Documentation](https://larcjs.github.io/site/)
+- 💬 [Discussions](https://github.com/larcjs/components/discussions)
+- 🐛 [Issue Tracker](https://github.com/larcjs/components/issues)

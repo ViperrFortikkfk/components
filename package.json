@@ -39,12 +39,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/larcjs/larc-components.git"
+    "url": "https://github.com/larcjs/components.git"
   },
   "bugs": {
-    "url": "https://github.com/larcjs/larc-components/issues"
+    "url": "https://github.com/larcjs/components/issues"
   },
-  "homepage": "https://github.com/larcjs/larc-components#readme",
+  "homepage": "https://github.com/larcjs/components#readme",
   "peerDependencies": {
     "@larcjs/core": "^1.0.0"
   },
