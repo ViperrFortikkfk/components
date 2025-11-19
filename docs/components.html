@@ -341,6 +341,7 @@
           <li><a href="#pan-date-picker"><code>&lt;pan-date-picker&gt;</code></a></li>
           <li><a href="#pan-dropdown"><code>&lt;pan-dropdown&gt;</code></a></li>
           <li><a href="#pan-form"><code>&lt;pan-form&gt;</code></a></li>
+          <li><a href="#pan-json-form"><code>&lt;pan-json-form&gt;</code></a></li>
           <li><a href="#pan-schema-form"><code>&lt;pan-schema-form&gt;</code></a></li>
           <li><a href="#pan-search-bar"><code>&lt;pan-search-bar&gt;</code></a></li>
         </ul>
@@ -1920,6 +1921,214 @@
       <h3>Example</h3>
       <pre><code class="language-html">&lt;pan-form&gt;&lt;/pan-form&gt;</code></pre>
     </div>
+
+    <div class="component" id="pan-json-form">
+      <div class="component-header">
+        <h2><code>&lt;pan-json-form&gt;</code></h2>
+        <div class="badges">
+          <span class="badge badge-stable">Stable</span>
+          <span class="badge badge-info">Since 1.0.0</span>
+        </div>
+      </div>
+      <p class="description">@since 1.0.0</p>
+  
+      <div class="related">
+        <strong>Related:</strong> <a href="#pan-form"><code>pan-form</code></a>, <a href="#pan-schema-form"><code>pan-schema-form</code></a>, <a href="#pan-validation"><code>pan-validation</code></a>
+      </div>
+    
+      <h3>Attributes</h3>
+      <table class="attr-table">
+        <thead>
+          <tr>
+            <th>Attribute</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+    
+          <tr>
+            <td><code>resource</code></td>
+            <td><code>string</code></td>
+            <td>Resource name for PAN topics (default: 'form')</td>
+          </tr>
+      
+          <tr>
+            <td><code>schema</code></td>
+            <td><code>string</code></td>
+            <td>JSON string defining form structure</td>
+          </tr>
+      
+          <tr>
+            <td><code>url</code></td>
+            <td><code>string</code></td>
+            <td>URL to fetch JSON schema from</td>
+          </tr>
+      
+          <tr>
+            <td><code>data</code></td>
+            <td><code>string</code></td>
+            <td>JSON string for initial form values</td>
+          </tr>
+      
+          <tr>
+            <td><code>layout</code></td>
+            <td><code>string</code></td>
+            <td>Layout mode: 'vertical', 'horizontal', 'grid' (default: 'vertical')</td>
+          </tr>
+      
+          <tr>
+            <td><code>auto-validate</code></td>
+            <td><code>boolean</code></td>
+            <td>Validate on input change (default: false)</td>
+          </tr>
+      
+          <tr>
+            <td><code>show-reset</code></td>
+            <td><code>boolean</code></td>
+            <td>Show reset button (default: true)</td>
+          </tr>
+      
+        </tbody>
+      </table>
+    <h3>PAN Topics</h3>
+      <h4>📥 Subscribes</h4>
+      <ul class="topic-list">
+      <li><code>{resource}.schema.set { schema } - Set form schema</code></li>
+<li><code>{resource}.data.set { data } - Set form values</code></li>
+<li><code>{resource}.data.get - Request current form data</code></li>
+<li><code>{resource}.validate - Trigger validation</code></li>
+<li><code>{resource}.submit - Trigger form submission</code></li>
+<li><code>{resource}.reset - Reset form to initial state</code></li>
+</ul>
+
+      <h4>📤 Publishes</h4>
+      <ul class="topic-list">
+      <li><code>{resource}.data { data } - Current form data (response to data.get)</code></li>
+<li><code>{resource}.submit { data, isValid } - Form submitted with data</code></li>
+<li><code>{resource}.change { field, value, data } - Field value changed</code></li>
+<li><code>{resource}.validation { isValid, errors } - Validation result</code></li>
+<li><code>{resource}.ready - Form rendered and ready</code></li>
+</ul>
+<h3>Examples</h3><pre><code class="language-html">&lt;!-- Basic form with inline schema --&gt;
+&lt;pan-json-form 
+  resource=&quot;contact&quot;
+  schema=&#039;{
+    &quot;fields&quot;: [
+      {
+        &quot;name&quot;: &quot;email&quot;,
+        &quot;type&quot;: &quot;email&quot;,
+        &quot;label&quot;: &quot;Email Address&quot;,
+        &quot;required&quot;: true,
+        &quot;className&quot;: &quot;form-control&quot;
+      },
+      {
+        &quot;name&quot;: &quot;message&quot;,
+        &quot;type&quot;: &quot;textarea&quot;,
+        &quot;label&quot;: &quot;Message&quot;,
+        &quot;rows&quot;: 5,
+        &quot;className&quot;: &quot;form-control&quot;
+      }
+    ]
+  }&#039;&gt;
+&lt;/pan-json-form&gt;</code></pre><pre><code class="language-html">&lt;!-- Form with URL schema and grid layout --&gt;
+&lt;pan-json-form
+  resource=&quot;registration&quot;
+  url=&quot;/api/forms/registration.json&quot;
+  layout=&quot;grid&quot;
+  auto-validate&gt;
+&lt;/pan-json-form&gt;</code></pre><pre><code class="language-javascript">// Programmatic form control
+import { PanClient } from &#039;@larcjs/core&#039;;
+const pc = new PanClient();
+
+// Set form schema
+pc.publish({
+  topic: &#039;contact.schema.set&#039;,
+  data: {
+    schema: {
+      fields: [
+        { name: &#039;name&#039;, type: &#039;text&#039;, label: &#039;Full Name&#039;, required: true },
+        { name: &#039;email&#039;, type: &#039;email&#039;, label: &#039;Email&#039;, required: true },
+        { name: &#039;role&#039;, type: &#039;select&#039;, label: &#039;Role&#039;, options: [
+          { value: &#039;dev&#039;, label: &#039;Developer&#039; },
+          { value: &#039;designer&#039;, label: &#039;Designer&#039; }
+        ]}
+      ]
+    }
+  }
+});
+
+// Listen for form submission
+pc.subscribe(&#039;contact.submit&#039;, (msg) =&gt; {
+  console.log(&#039;Form data:&#039;, msg.data.data);
+  console.log(&#039;Is valid:&#039;, msg.data.isValid);
+});
+
+// Get current form data
+pc.subscribe(&#039;contact.data&#039;, (msg) =&gt; {
+  console.log(&#039;Current data:&#039;, msg.data.data);
+});
+pc.publish({ topic: &#039;contact.data.get&#039; });</code></pre><pre><code class="language-json">// Full schema example
+{
+  &quot;fields&quot;: [
+    {
+      &quot;name&quot;: &quot;username&quot;,
+      &quot;type&quot;: &quot;text&quot;,
+      &quot;label&quot;: &quot;Username&quot;,
+      &quot;placeholder&quot;: &quot;Enter username&quot;,
+      &quot;required&quot;: true,
+      &quot;minLength&quot;: 3,
+      &quot;maxLength&quot;: 20,
+      &quot;className&quot;: &quot;form-control&quot;,
+      &quot;style&quot;: { &quot;marginBottom&quot;: &quot;1rem&quot; },
+      &quot;pattern&quot;: &quot;^[a-zA-Z0-9_]+$&quot;,
+      &quot;help&quot;: &quot;Letters, numbers, and underscore only&quot;
+    },
+    {
+      &quot;name&quot;: &quot;age&quot;,
+      &quot;type&quot;: &quot;number&quot;,
+      &quot;label&quot;: &quot;Age&quot;,
+      &quot;min&quot;: 18,
+      &quot;max&quot;: 100,
+      &quot;className&quot;: &quot;form-control&quot;
+    },
+    {
+      &quot;name&quot;: &quot;bio&quot;,
+      &quot;type&quot;: &quot;textarea&quot;,
+      &quot;label&quot;: &quot;Bio&quot;,
+      &quot;rows&quot;: 4,
+      &quot;maxLength&quot;: 500,
+      &quot;className&quot;: &quot;form-control&quot;
+    },
+    {
+      &quot;name&quot;: &quot;country&quot;,
+      &quot;type&quot;: &quot;select&quot;,
+      &quot;label&quot;: &quot;Country&quot;,
+      &quot;options&quot;: [
+        { &quot;value&quot;: &quot;us&quot;, &quot;label&quot;: &quot;United States&quot; },
+        { &quot;value&quot;: &quot;uk&quot;, &quot;label&quot;: &quot;United Kingdom&quot; },
+        { &quot;value&quot;: &quot;ca&quot;, &quot;label&quot;: &quot;Canada&quot; }
+      ],
+      &quot;className&quot;: &quot;form-control&quot;
+    },
+    {
+      &quot;name&quot;: &quot;interests&quot;,
+      &quot;type&quot;: &quot;checkbox-group&quot;,
+      &quot;label&quot;: &quot;Interests&quot;,
+      &quot;options&quot;: [
+        { &quot;value&quot;: &quot;coding&quot;, &quot;label&quot;: &quot;Coding&quot; },
+        { &quot;value&quot;: &quot;design&quot;, &quot;label&quot;: &quot;Design&quot; },
+        { &quot;value&quot;: &quot;writing&quot;, &quot;label&quot;: &quot;Writing&quot; }
+      ]
+    },
+    {
+      &quot;name&quot;: &quot;newsletter&quot;,
+      &quot;type&quot;: &quot;checkbox&quot;,
+      &quot;label&quot;: &quot;Subscribe to newsletter&quot;,
+      &quot;className&quot;: &quot;form-check-input&quot;
+    }
+  ]
+}</code></pre></div>
 
     <div class="component" id="pan-schema-form">
       <div class="component-header">
