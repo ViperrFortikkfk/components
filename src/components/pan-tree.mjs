@@ -80,6 +80,7 @@ export class PanTree extends HTMLElement {
 
     if (dataAttr) {
       try {
+        // Parse creates new objects, so no need for additional clone
         this.tree = JSON.parse(dataAttr);
         if (this.allExpanded) this.expandAll();
         this.render();
@@ -90,6 +91,7 @@ export class PanTree extends HTMLElement {
       try {
         const response = await fetch(urlAttr);
         if (response.ok) {
+          // Response.json() creates new objects, so no need for additional clone
           this.tree = await response.json();
           if (this.allExpanded) this.expandAll();
           this.render();
@@ -104,7 +106,8 @@ export class PanTree extends HTMLElement {
     this._offs.push(
       this.pc.subscribe(`${this.resource}.data.set`, (msg) => {
         if (msg.data.tree) {
-          this.tree = msg.data.tree;
+          // Deep clone to avoid shared reference issues
+          this.tree = JSON.parse(JSON.stringify(msg.data.tree));
           if (this.allExpanded) this.expandAll();
           this.render();
         }
