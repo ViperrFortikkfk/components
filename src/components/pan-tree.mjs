@@ -41,6 +41,7 @@ export class PanTree extends HTMLElement {
     this.draggedPath = null;
     this.dropTarget = null;
     this._offs = [];
+    this._listenersAttached = false;
   }
 
   connectedCallback() {
@@ -431,27 +432,34 @@ export class PanTree extends HTMLElement {
   }
 
   attachEventListeners() {
+    // Only attach listeners once
+    if (this._listenersAttached) return;
+    this._listenersAttached = true;
+
     const root = this.shadowRoot;
 
     // Click handlers
     root.addEventListener('click', (e) => {
-      const toggle = e.target.closest('[data-action="toggle"]');
-      if (toggle) {
-        e.stopPropagation(); // Prevent event from bubbling to node-content handler
-        const node = e.target.closest('.tree-node');
+      // Prioritize toggle icon clicks
+      if (e.target.matches('[data-action="toggle"]') || e.target.closest('[data-action="toggle"]')) {
+        const toggle = e.target.closest('[data-action="toggle"]') || e.target;
+        const node = toggle.closest('.tree-node');
         if (node) {
           const id = node.dataset.id;
-          const path = node.dataset.path.split(',').map(Number);
-          const nodeData = this.getNodeByPath(path);
-          if (nodeData && nodeData.children && nodeData.children.length > 0) {
-            this.toggleNode(id);
-          }
+          this.toggleNode(id);
         }
         return;
       }
 
+      // Handle clicks on node content (for selection, not toggle)
+      if (e.target.matches('[data-action="label"]') || e.target.closest('[data-action="label"]')) {
+        // Let contenteditable handle label clicks
+        return;
+      }
+
+      // Click anywhere else on the node content selects it
       const content = e.target.closest('.node-content');
-      if (content && !e.target.matches('[contenteditable="true"]')) {
+      if (content) {
         const node = e.target.closest('.tree-node');
         if (node) {
           const id = node.dataset.id;
