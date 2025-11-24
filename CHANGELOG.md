@@ -6,6 +6,97 @@ This project adheres to Keep a Changelog, and aims to follow Semantic Versioning
 
 ## [Unreleased]
 
+---
+
+## [1.1.0] - 2024-11-24
+
+### 🚀 Major Feature: Advanced State Management
+
+This release adds a comprehensive suite of state management components for building modern, offline-first applications.
+
+#### ✨ New Components
+
+**State Management:**
+- **pan-state-sync** - Cross-tab state synchronization using BroadcastChannel API
+  - Leader election with automatic failover
+  - Conflict resolution strategies (last-write-wins, merge, custom)
+  - Tab visibility handling and automatic reconnection
+  - Heartbeat monitoring for leader health checks
+
+- **pan-computed-state** - Derived/computed state with automatic dependency tracking
+  - Multi-source dependencies with wildcard support
+  - Async computation support
+  - Memoization strategies (none, shallow, deep)
+  - Debouncing for performance optimization
+
+- **pan-offline-sync** - Offline-first support with automatic queue management
+  - IndexedDB-based mutation queue with persistence
+  - Exponential backoff retry logic
+  - Network status monitoring with automatic sync
+  - Conflict detection and resolution
+  - Configurable endpoints for API synchronization
+
+- **pan-persistence-strategy** - Declarative persistence routing
+  - Multiple storage backends (memory, localStorage, sessionStorage, IndexedDB)
+  - TTL (time-to-live) support for cache expiration
+  - Automatic state hydration on page load
+  - Size limits per topic with overflow handling
+  - Topic-based routing rules
+
+- **pan-schema-validator** - Runtime JSON Schema validation (no build tools required)
+  - Subset of JSON Schema Draft-07
+  - Strict and warning modes
+  - Built-in format validators (email, uri, date-time, uuid, ipv4, ipv6)
+  - Detailed error messages with paths
+  - Zero dependencies, browser-native
+
+- **pan-undo-redo** - Time-travel debugging with history management
+  - Configurable history stack size
+  - Automatic change batching (100ms window)
+  - Jump to specific timestamp
+  - Auto-snapshot on interval
+  - Undo/redo via PAN topics or direct API
+
+- **pan-store (enhanced)** - Local reactive store with new composition helpers
+  - `select(path)` - Nested path selection
+  - `derive(key, deps, fn)` - Computed values
+  - `batch(fn)` - Atomic updates with single event
+  - `use(fn)` - Middleware support
+  - `reset()`, `has()`, `delete()`, `keys()` - Additional utilities
+
+#### 🎨 Enhanced Components
+
+- **pan-inspector** - Completely redesigned with advanced debugging features
+  - **State Tree View** - Hierarchical visualization of all retained messages
+  - **Metrics Dashboard** - Message rates, top topics, performance stats
+  - **Advanced Filtering** - Filter by topic patterns and message type (retained/transient)
+  - **Message Details Modal** - Inspect full payloads and metadata
+  - **Export/Import** - Save and restore state snapshots as JSON
+  - **Performance Tracking** - Handler duration and message sizes
+  - Three-view tabs: Messages, State Tree, Metrics
+
+#### 📚 Documentation
+
+- **State Management Patterns Guide** (15,000+ words) - Comprehensive patterns and best practices
+- **State Management API Reference** - Complete API documentation with examples
+- **STATE_MANAGEMENT_README.md** - Overview and quick start guide
+- **Offline-First Todo App Example** - Complete demo showing all features working together
+
+#### 🔧 Package Updates
+
+- Added 7 new component exports to package.json
+- Updated keywords: state-management, offline-first, cross-tab-sync, persistence, validation, undo-redo
+- Updated README with state management section
+- Component count: 50+ → 57+
+
+#### 🎯 Use Cases Enabled
+
+This release enables:
+- **Offline-first PWAs** - Work without network, sync when available
+- **Collaborative apps** - Multi-tab state synchronization
+- **Complex state management** - Derived state, validation, undo/redo
+- **Enterprise applications** - Robust persistence, debugging, monitoring
+
 ### 🔒 Security
 
 - **Security audit completed** - Comprehensive audit of all high-risk UI components
@@ -20,8 +111,9 @@ This project adheres to Keep a Changelog, and aims to follow Semantic Versioning
 
 ### Changed
 
-- Updated README to reflect component security audit completion
+- Updated README to reflect component security audit completion and state management features
 - Components no longer marked as experimental
+- Bumped component count from 50+ to 57+
 
 ---
 

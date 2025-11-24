@@ -1,6 +1,6 @@
 {
   "name": "@larcjs/components",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "LARC Components - UI web components library built on the PAN messaging bus",
   "type": "module",
   "main": "./src/components/index.js",
@@ -14,7 +14,14 @@
     "./pan-dropdown": "./src/components/pan-dropdown.mjs",
     "./pan-modal": "./src/components/pan-modal.mjs",
     "./pan-tabs": "./src/components/pan-tabs.mjs",
-    "./pan-toolbar": "./src/components/pan-toolbar.mjs"
+    "./pan-toolbar": "./src/components/pan-toolbar.mjs",
+    "./pan-state-sync": "./src/components/pan-state-sync.mjs",
+    "./pan-computed-state": "./src/components/pan-computed-state.mjs",
+    "./pan-offline-sync": "./src/components/pan-offline-sync.mjs",
+    "./pan-persistence-strategy": "./src/components/pan-persistence-strategy.mjs",
+    "./pan-schema-validator": "./src/components/pan-schema-validator.mjs",
+    "./pan-undo-redo": "./src/components/pan-undo-redo.mjs",
+    "./pan-store": "./src/components/pan-store.mjs"
   },
   "files": [
     "src/**/*",
@@ -33,7 +40,14 @@
     "data-grid",
     "form",
     "table",
-    "inspector"
+    "inspector",
+    "state-management",
+    "offline-first",
+    "cross-tab-sync",
+    "persistence",
+    "validation",
+    "undo-redo",
+    "computed-state"
   ],
   "author": "Chris Robison",
   "license": "MIT",

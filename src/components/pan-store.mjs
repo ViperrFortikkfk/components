@@ -8,29 +8,183 @@ export function createStore(initial = {}) {
   const bus = new EventTarget();
   let updating = false; // guards against feedback loops
   let state = structuredClone(initial);
+  const middleware = []; // Middleware functions
+  const derived = new Map(); // Derived/computed values
 
   const proxy = new Proxy(state, {
     set(obj, key, value) {
       if (Object.is(obj[key], value)) return true;
+
+      const oldValue = obj[key];
       obj[key] = value;
-      if (!updating) bus.dispatchEvent(new CustomEvent('state', { detail: { key, value, state: proxy } }));
+
+      // Run middleware
+      if (!updating) {
+        for (const fn of middleware) {
+          try {
+            fn({ key, value, oldValue, state: proxy });
+          } catch (e) {
+            console.error('Middleware error:', e);
+          }
+        }
+
+        bus.dispatchEvent(new CustomEvent('state', { detail: { key, value, oldValue, state: proxy } }));
+
+        // Update derived values that depend on this key
+        updateDerivedValues(key);
+      }
+
       return true;
+    },
+
+    get(obj, key) {
+      // Check if it's a derived value
+      if (derived.has(key)) {
+        return derived.get(key).compute();
+      }
+      return obj[key];
     }
   });
 
   const setAll = (obj = {}) => {
     updating = true;
     try { for (const [k,v] of Object.entries(obj)) proxy[k] = v; }
-    finally { updating = false; }
+    finally {
+      updating = false;
+      bus.dispatchEvent(new CustomEvent('state', { detail: { keys: Object.keys(obj), state: proxy } }));
+    }
+  };
+
+  const updateDerivedValues = (changedKey) => {
+    for (const [derivedKey, derivedConfig] of derived.entries()) {
+      if (derivedConfig.deps.includes(changedKey)) {
+        const newValue = derivedConfig.compute();
+        bus.dispatchEvent(new CustomEvent('derived', {
+          detail: { key: derivedKey, value: newValue, state: proxy }
+        }));
+      }
+    }
   };
 
   return {
     state: proxy,
-    subscribe(fn) { bus.addEventListener('state', fn); return () => bus.removeEventListener('state', fn); },
+
+    subscribe(fn) {
+      bus.addEventListener('state', fn);
+      return () => bus.removeEventListener('state', fn);
+    },
+
     snapshot() { return JSON.parse(JSON.stringify(proxy)); },
+
     set(k, v){ proxy[k] = v; },
+
     patch(obj){ if (obj && typeof obj === 'object') setAll(obj); },
-    update(fn){ const cur = JSON.parse(JSON.stringify(proxy)); const next = fn(cur) || cur; setAll(next); },
+
+    update(fn){
+      const cur = JSON.parse(JSON.stringify(proxy));
+      const next = fn(cur) || cur;
+      setAll(next);
+    },
+
+    // NEW: Select nested value by path
+    select(path) {
+      const keys = path.split('.');
+      let value = proxy;
+      for (const key of keys) {
+        if (value == null) return undefined;
+        value = value[key];
+      }
+      return value;
+    },
+
+    // NEW: Derive computed value from dependencies
+    derive(key, deps, computeFn) {
+      if (typeof deps === 'function') {
+        computeFn = deps;
+        deps = Object.keys(state);
+      }
+
+      const compute = () => {
+        const values = deps.map(dep => proxy[dep]);
+        return computeFn(...values);
+      };
+
+      derived.set(key, { deps, compute });
+
+      // Subscribe to changes in dependencies
+      const unsub = this.subscribe(({ detail }) => {
+        if (detail.key && deps.includes(detail.key)) {
+          updateDerivedValues(detail.key);
+        }
+      });
+
+      return () => {
+        derived.delete(key);
+        unsub();
+      };
+    },
+
+    // NEW: Batch multiple updates together
+    batch(fn) {
+      updating = true;
+      const changes = [];
+
+      try {
+        fn({
+          set: (k, v) => {
+            const oldValue = proxy[k];
+            state[k] = v;
+            changes.push({ key: k, value: v, oldValue });
+          },
+          state: proxy
+        });
+      } finally {
+        updating = false;
+        if (changes.length > 0) {
+          bus.dispatchEvent(new CustomEvent('state', {
+            detail: { batch: true, changes, state: proxy }
+          }));
+        }
+      }
+    },
+
+    // NEW: Add middleware
+    use(fn) {
+      middleware.push(fn);
+      return () => {
+        const index = middleware.indexOf(fn);
+        if (index > -1) middleware.splice(index, 1);
+      };
+    },
+
+    // NEW: Reset to initial state
+    reset() {
+      setAll(structuredClone(initial));
+    },
+
+    // NEW: Check if key exists
+    has(key) {
+      return key in proxy || derived.has(key);
+    },
+
+    // NEW: Delete key
+    delete(key) {
+      if (key in proxy) {
+        const oldValue = proxy[key];
+        delete state[key];
+        bus.dispatchEvent(new CustomEvent('state', {
+          detail: { key, deleted: true, oldValue, state: proxy }
+        }));
+        return true;
+      }
+      return false;
+    },
+
+    // NEW: Get all keys (including derived)
+    keys() {
+      return [...Object.keys(state), ...derived.keys()];
+    },
+
     _setAll: setAll,
   };
 }
