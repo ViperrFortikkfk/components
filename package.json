@@ -60,7 +60,7 @@
   },
   "homepage": "https://github.com/larcjs/components#readme",
   "peerDependencies": {
-    "@larcjs/core": "^1.0.0"
+    "@larcjs/core": "^1.1.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.1"
