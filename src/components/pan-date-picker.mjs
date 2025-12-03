@@ -25,6 +25,7 @@ export class PanDatePicker extends HTMLElement {
     this.isOpen = false;
     this.currentMonth = new Date();
     this.selectedDate = null;
+    this.eventsSetup = false; // Guard against duplicate event listeners
   }
 
   connectedCallback() {
@@ -32,9 +33,8 @@ export class PanDatePicker extends HTMLElement {
       this.selectedDate = new Date(this.value);
       this.currentMonth = new Date(this.selectedDate);
     }
-    this.render();
     this.setupTopics();
-    this.setupEvents();
+    this.render();
   }
 
   attributeChangedCallback(name, oldVal, newVal) {
@@ -62,6 +62,10 @@ export class PanDatePicker extends HTMLElement {
   }
 
   setupEvents() {
+    // Skip if already set up to prevent duplicate listeners
+    if (this.eventsSetup) return;
+    this.eventsSetup = true;
+
     const input = this.shadowRoot.querySelector('.date-input');
     const calendar = this.shadowRoot.querySelector('.calendar');
     const prevBtn = this.shadowRoot.querySelector('.prev-month');
@@ -254,6 +258,9 @@ export class PanDatePicker extends HTMLElement {
   }
 
   render() {
+    // Reset events guard so setupEvents can run fresh after re-render
+    this.eventsSetup = false;
+
     const displayValue = this.selectedDate ? this.formatDate(this.selectedDate) : '';
 
     this.shadowRoot.innerHTML = `

@@ -24,11 +24,11 @@ export class FileUpload extends HTMLElement {
     this.attachShadow({ mode: 'open' });
     this.pc = new PanClient(this);
     this.files = [];
+    this.boundHandlers = null; // Store bound handlers for cleanup
   }
 
   connectedCallback() {
     this.render();
-    this.setupEvents();
   }
 
   attributeChangedCallback() {
@@ -43,42 +43,49 @@ export class FileUpload extends HTMLElement {
   get dragDrop() { return this.getAttribute('drag-drop') !== 'false'; }
 
   setupEvents() {
+    // Skip if already set up to prevent duplicate listeners
+    if (this.boundHandlers) return;
+
     const input = this.shadowRoot.querySelector('.file-input');
     const dropZone = this.shadowRoot.querySelector('.drop-zone');
     const browseBtn = this.shadowRoot.querySelector('.browse-btn');
 
+    // Create bound handlers once
+    this.boundHandlers = {
+      fileChange: (e) => this.handleFiles(e.target.files),
+      browseClick: () => input?.click(),
+      preventDefaults: (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      },
+      dragEnter: () => dropZone?.classList.add('drag-over'),
+      dragLeave: () => dropZone?.classList.remove('drag-over'),
+      drop: (e) => {
+        dropZone?.classList.remove('drag-over');
+        const files = e.dataTransfer.files;
+        this.handleFiles(files);
+      }
+    };
+
     if (input) {
-      input.addEventListener('change', (e) => this.handleFiles(e.target.files));
+      input.addEventListener('change', this.boundHandlers.fileChange);
     }
 
     if (browseBtn) {
-      browseBtn.addEventListener('click', () => input?.click());
+      browseBtn.addEventListener('click', this.boundHandlers.browseClick);
     }
 
     if (dropZone && this.dragDrop) {
       ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        dropZone.addEventListener(eventName, (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-        });
+        dropZone.addEventListener(eventName, this.boundHandlers.preventDefaults);
       });
 
       ['dragenter', 'dragover'].forEach(eventName => {
-        dropZone.addEventListener(eventName, () => {
-          dropZone.classList.add('drag-over');
-        });
+        dropZone.addEventListener(eventName, this.boundHandlers.dragEnter);
       });
 
-      ['dragleave', 'drop'].forEach(eventName => {
-        dropZone.addEventListener(eventName, () => {
-          dropZone.classList.remove('drag-over');
-        });
-      });
-
-      dropZone.addEventListener('drop', (e) => {
-        const files = e.dataTransfer.files;
-        this.handleFiles(files);
-      });
+      dropZone.addEventListener('dragleave', this.boundHandlers.dragLeave);
+      dropZone.addEventListener('drop', this.boundHandlers.drop);
     }
   }
 
@@ -195,6 +202,9 @@ export class FileUpload extends HTMLElement {
   }
 
   render() {
+    // Reset handlers so setupEvents can run fresh
+    this.boundHandlers = null;
+
     this.shadowRoot.innerHTML = `
       <style>
         :host {

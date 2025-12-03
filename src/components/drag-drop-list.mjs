@@ -30,6 +30,8 @@ export class DragDropList extends HTMLElement {
     this.items = [];
     this.draggedElement = null;
     this.draggedIndex = null;
+    this.targetIndex = null; // Track where the item is being dropped
+    this.eventsSetup = false; // Guard against duplicate event listeners
   }
 
   connectedCallback() {
@@ -86,6 +88,10 @@ export class DragDropList extends HTMLElement {
   }
 
   setupDragEvents() {
+    // Skip if already set up to prevent duplicate listeners
+    if (this.eventsSetup) return;
+    this.eventsSetup = true;
+
     const listItems = this.shadowRoot.querySelectorAll('.list-item');
 
     listItems.forEach((item, index) => {
@@ -112,6 +118,7 @@ export class DragDropList extends HTMLElement {
           handle.style.cursor = 'grab';
           this.draggedElement = null;
           this.draggedIndex = null;
+          this.targetIndex = null;
 
           // Remove all drag-over classes
           listItems.forEach(li => li.classList.remove('drag-over'));
@@ -127,6 +134,10 @@ export class DragDropList extends HTMLElement {
           } else {
             item.parentElement.insertBefore(this.draggedElement, afterElement);
           }
+
+          // Calculate target index AFTER DOM manipulation based on current position
+          const allItems = Array.from(this.shadowRoot.querySelectorAll('.list-item'));
+          this.targetIndex = allItems.indexOf(this.draggedElement);
         });
 
         item.addEventListener('dragenter', (e) => {
@@ -144,19 +155,30 @@ export class DragDropList extends HTMLElement {
           if (this.disabled) return;
           e.preventDefault();
 
+          console.log('[drag-drop-list] Drop event fired!');
+
           item.classList.remove('drag-over');
 
-          const newIndex = Array.from(listItems).indexOf(item);
           const oldIndex = this.draggedIndex;
+          const newIndex = this.targetIndex;
 
-          if (oldIndex !== newIndex && oldIndex !== null) {
+          console.log('[drag-drop-list] Drop:', { oldIndex, newIndex, targetIndex: this.targetIndex });
+
+          if (oldIndex !== newIndex && oldIndex !== null && newIndex !== null) {
             // Update items array
             const movedItem = this.items[oldIndex];
             this.items.splice(oldIndex, 1);
             this.items.splice(newIndex, 0, movedItem);
 
+            const topic = `${this.topic}.reorder`;
+            console.log('[drag-drop-list] Publishing to:', topic, {
+              items: this.items,
+              from: oldIndex,
+              to: newIndex
+            });
+
             this.pc.publish({
-              topic: `${this.topic}.reorder`,
+              topic: topic,
               data: {
                 items: this.items,
                 from: oldIndex,
@@ -187,6 +209,9 @@ export class DragDropList extends HTMLElement {
   }
 
   render() {
+    // Reset events guard so setupDragEvents can run fresh after re-render
+    this.eventsSetup = false;
+
     this.shadowRoot.innerHTML = `
       <style>
         :host {
